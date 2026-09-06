@@ -8,6 +8,7 @@ import pandas as pd
 plt.rcParams['figure.dpi'] = 120
 plt.rcParams['font.size'] = 11
 np.set_printoptions(precision=4, suppress=True)
+np.random.seed(42)
 
 def task1():
     print('Задание 1')
@@ -172,12 +173,19 @@ def task1():
         temp_obs += observed_freq[i]
         temp_theor += theor_freq[i]
 
-        if temp_theor >= min_freq or i == len(observed_freq) - 1:
-            if temp_theor > 0:
-                merged_obs.append(temp_obs)
-                merged_theor.append(temp_theor)
+        if temp_theor >= min_freq:
+            merged_obs.append(temp_obs)
+            merged_theor.append(temp_theor)
             temp_obs = 0
             temp_theor = 0
+
+    if temp_obs > 0 or temp_theor > 0:
+        if merged_obs:
+            merged_obs[-1] += temp_obs
+            merged_theor[-1] += temp_theor
+        elif temp_theor > 0:
+            merged_obs.append(temp_obs)
+            merged_theor.append(temp_theor)
 
     print(f'\n4. После объединения (np_i ≥ {min_freq}):')
     print(f'   Наблюдаемые частоты: {[int(x) for x in merged_obs]}')
@@ -242,7 +250,7 @@ def task2():
     plt.ylabel('Плотность вероятности')
 
     # Теоретическая плотность
-    x_vals = np.linspace(-1, np.max(data) * 1.1, 1000)
+    x_vals = np.linspace(0, np.max(data) * 1.1, 1000)
     theoretical = expon.pdf(x_vals, loc=0, scale=math_exp)
     plt.plot(x_vals, theoretical, 'r-', linewidth=2, label=f'Теоретическая плотность Exp(a={a_true})')
 
@@ -287,16 +295,16 @@ def task2():
     sample_mean = np.mean(data)
     a_mm = 1 / sample_mean
 
-    print(f'Параметр a, данный в условии задачи: {a_true:4f}')
-    print(f'Точечная оценка параметра  a, найденная методом моментов: {a_mm:4f}')
+    print(f'Параметр a, данный в условии задачи: {a_true:.4f}')
+    print(f'Точечная оценка параметра a, найденная методом моментов: {a_mm:.4f}')
 
     print('\nПункт 2.3:')
 
     exp_val = sample_mean
     var = np.var(data, ddof=1)
 
-    print(f'Точечная оценка математического ожидания: {exp_val:4f}')
-    print(f'Точечная оценка дисперсии: {var:4f}')
+    print(f'Точечная оценка математического ожидания: {exp_val:.4f}')
+    print(f'Точечная оценка дисперсии: {var:.4f}')
 
     print('\nПункт 2.4:')
 
